@@ -31,6 +31,9 @@ CREATE TABLE main.temperature (
 ## API
 
 - GET /temperature
+
+query temperature measurements
+
 params:
   - since: query by linux time
   - until: query by linux time (default now)
@@ -39,15 +42,18 @@ params:
   - measurement: query by measurement
 
 example:
-  ```commandline
+  ```bash
   curl localhost:5000/temperature?unit=celcius&location=colony-1&since=1681895166&until=1681895168
   ```
+
   - POST /temperature
     
+  lets user add a temperature measurement
+
   request body:
   ```json
   {
-    "unit": "celcius",
+    "unit": "celcius", 
     "location": "colony-1",
     "measurement": 20.0,
     "timestamp": 1681895166
@@ -58,3 +64,19 @@ example:
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"unit": "celcius", "location": "colony-1", "measurement": 20.0, "timestamp": 1681895166}' localhost:5000/temperature
 ```
+
+- GET /temperature/statistics
+
+returns average, count, and sum of the temperature measurements
+
+params:
+  - since: query by linux time
+  - until: query by linux time (default now)
+  - location: query by location
+  - unit: query by unit
+  - measurement: query by measurement
+
+example:
+  ```bash
+  curl localhost:5000/temperature?unit=celcius&location=colony-1&since=1681895166&until=1681895168
+  ```
