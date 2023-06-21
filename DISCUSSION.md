@@ -5,9 +5,12 @@
   - more intuitive for the user
   - and usually a path would return 1 resource, while a query would return a list of resources
 - not much of a relational db type of thing because it only has 1 entity
+- use timezone to display time in the user's local time (did not implement this)
+- have to use raw sql to compute for statistics
 
 
 # Notes
+
 - for simplicity's sake, using the following tech:
   - pipenv: easy to setup and use, also dependency is not bad
   - flask: one of the more famous python web frameworks and simpler than for example django

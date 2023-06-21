@@ -1,10 +1,10 @@
-
 from flask import request, jsonify
-# from flask import current_app as app
 from datetime import datetime
+from sqlalchemy import text
 
 from app import app, db
 from model import Temperature
+
 
 @app.route('/')
 def hello_world():
@@ -45,6 +45,28 @@ def post_temp():
     return jsonify({"success": False, "errors": str(e)})
 
 
+@app.route('/temperature/statistics', methods=['GET'])
+def get_temp_stats():
+  """
+  since: query by time
+  until: query by time
+  location: query by location
+  unit: query by unit
+  measurement: query by measurement
+  returns the average, median, and count of the temperature measurements
+  """
+  params = request.args
+  stmt, val = prepare_query_for_get_temp_stats(params)
+  rs = db.session.execute(stmt, val).first()
+  res = {
+    "avg": rs[0] if rs[1] else 0,
+    "count": rs[1],
+    "median": rs[2] if rs[1] else 0
+  }
+  return jsonify(res)
+
+
+# Helper functions below
 def to_dict(row):
   return {column.name: getattr(row, column.name) for column in row.__table__.columns if column.name != "id"}
 
@@ -64,6 +86,55 @@ def prepare_query_for_get_temp(params):
 
   stmt = db.select(Temperature).where(*query_filter)
   return stmt
+
+
+def prepare_query_for_get_temp_stats(req_params):
+  status = False
+  filter = 'WHERE '
+  params = {}
+  if "location" in req_params:
+    if status:
+      filter += "AND "
+    filter += "location = :location "
+    params["location"] = req_params["location"]
+    status = True
+  if "unit" in req_params:
+    if status:
+      filter += "AND "
+    filter += "unit = :unit "
+    params["unit"] = req_params["unit"]
+    status = True
+
+  if "since" in req_params:
+    if status:
+      filter += "AND "
+    filter += "timestamp >= :since "
+    params["since"] = req_params["since"]
+    status = True
+
+  if "until" in req_params:
+    if status:
+      filter += "AND "
+    filter += "timestamp <= :until "
+    params["until"] = req_params["until"]
+    status = True
+  else:
+    if status:
+      filter += "AND "
+    filter += "timestamp <= :until "
+    params["until"] = datetime.utcnow()
+
+  qs = (
+    f"SELECT "
+    f"avg(measurement) as avg, "
+    f"count(*) as count, "
+    f"(SELECT AVG(measurement) FROM "
+    f"(SELECT measurement FROM temperature {filter} ORDER BY measurement LIMIT 2 - "
+    f"(SELECT COUNT(*) FROM temperature {filter}) % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM temperature {filter}))) as median "
+    f"FROM temperature {filter}"
+  )
+
+  return text(qs), params
 
 
 def validate_post_temp(body):
