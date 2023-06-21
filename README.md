@@ -11,6 +11,10 @@
 ```bash 
 curl localhost:5000
 ```
+4. to run test, execute:
+```bash
+pipenv run python test.py
+```
 
 ## DB
 - using sqlite3
@@ -39,11 +43,11 @@ params:
   - until: query by linux time (default now)
   - location: query by location
   - unit: query by unit
-  - measurement: query by measurement
+  - measurement: query by measurement, accepts json object with min and max keys
 
 example:
   ```bash
-  curl localhost:5000/temperature?unit=celcius&location=colony-1&since=1681895166&until=1681895168
+  curl localhost:5000/temperature?unit=celcius&location=colony-1&since=1681895166&until=1681895168&measurement={"min": "1","max": "2"}
   ```
 
   - POST /temperature
@@ -74,9 +78,12 @@ params:
   - until: query by linux time (default now)
   - location: query by location
   - unit: query by unit
-  - measurement: query by measurement
+  - measurement: query by measurement, accepts json object with min and max keys
 
 example:
   ```bash
   curl localhost:5000/temperature?unit=celcius&location=colony-1&since=1681895166&until=1681895168
   ```
+
+# Discussion
+please refer to [this](https://github.com/heinrich10/pyapi/blob/main/DISCUSSION.md)
