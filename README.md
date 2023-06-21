@@ -11,6 +11,10 @@
 ```bash 
 curl localhost:5000
 ```
+4. to run test, execute:
+```bash
+pipenv run python test.py
+```
 
 ## DB
 - using sqlite3
