@@ -17,3 +17,10 @@
   - alchemy: better to use some db framework so that it has built in session management
   - sqlite3: has most sql functionality, no need to setup a proper db server
 - datatypes not optimized since sqlite3 is used
+
+# Bonus
+- unit test: partial implementation on test.py
+- caching: not implemented
+- rate limit: it is still a good idea to do rate limiting on the api gateway side
+- hourly notification: refer to `cj.py`, if it is simple like this, cronjob will still be the best way to handle it
+if there is a more complex use case, we can use message queues
